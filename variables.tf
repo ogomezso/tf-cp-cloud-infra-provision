@@ -78,7 +78,7 @@ variable "broker_count" {
 
 variable "broker_vm_type" {
   type = string
-  description = "Zookeeper Virtual Machine type to be created. Default: Standard_D8_v3"
+  description = "Kafka Broker Virtual Machine type to be created. Default: Standard_D8_v3"
   default = "Standard_D8s_v3"
 }
 
@@ -91,5 +91,141 @@ variable "broker_disk_cache_policy" {
 variable "broker_disk_storage_account_type" {
   type = string
   description = "Kafka Broker Virtual Machine Storage Account type. Default: Standard_LRS"
+  default = "Standard_LRS"
+}
+variable "sr_count" {
+  description = "Schema Registry Instances to be created. Default 1"
+  default = 1
+}
+
+variable "sr_vm_type" {
+  type = string
+  description = "Schema Registry Virtual Machine type to be created. Default: Standard_D4_v3"
+  default = "Standard_D4s_v3"
+}
+
+variable "sr_disk_cache_policy" {
+  type = string
+  description = "Schema Registry Virtual Machine disk Caching policy. Default: ReadWrite"
+  default = "ReadWrite"
+}
+
+variable "sr_disk_storage_account_type" {
+  type = string
+  description = "Schema Registry Virtual Machine Storage Account type. Default: Standard_LRS"
+  default = "Standard_LRS"
+}
+
+variable "connect_count" {
+  description = "Kafka Connect Instances to be created. Default 2"
+  default = 2
+}
+
+variable "connect_vm_type" {
+  type = string
+  description = "Kafka Connect Virtual Machine type to be created. Default: Standard_D4_v3"
+  default = "Standard_D4s_v3"
+}
+
+variable "connect_disk_cache_policy" {
+  type = string
+  description = "Kafka Connect Virtual Machine disk Caching policy. Default: ReadWrite"
+  default = "ReadWrite"
+}
+
+variable "connect_disk_storage_account_type" {
+  type = string
+  description = "Kafka Connect Virtual Machine Storage Account type. Default: Standard_LRS"
+  default = "Standard_LRS"
+}
+
+variable "replicator_count" {
+  description = "Replicator Instances to be created. Default 0"
+  default = 0
+}
+
+variable "replicator_vm_type" {
+  type = string
+  description = "Replicator Virtual Machine type to be created. Default: Standard_D4_v3"
+  default = "Standard_D4s_v3"
+}
+
+variable "replicator_disk_cache_policy" {
+  type = string
+  description = "Replicator Virtual Machine disk Caching policy. Default: ReadWrite"
+  default = "ReadWrite"
+}
+
+variable "replicator_disk_storage_account_type" {
+  type = string
+  description = "Replicator Virtual Machine Storage Account type. Default: Standard_LRS"
+  default = "Standard_LRS"
+}
+variable "ksql_count" {
+  description = "KsqlDB Instances to be created. Default 1"
+  default = 1
+}
+
+variable "ksql_vm_type" {
+  type = string
+  description = "KsqlDB Virtual Machine type to be created. Default: Standard_D8s_v3"
+  default = "Standard_D8s_v3"
+}
+
+variable "ksql_disk_cache_policy" {
+  type = string
+  description = "KsqlDB Virtual Machine disk Caching policy. Default: ReadWrite"
+  default = "ReadWrite"
+}
+
+variable "ksql_disk_storage_account_type" {
+  type = string
+  description = "KsqlDB Virtual Machine Storage Account type. Default: Standard_LRS"
+  default = "Standard_LRS"
+}
+
+variable "krp_count" {
+  description = "Kafka Rest Proxy Instances to be created. Default 0"
+  default = 0
+}
+
+variable "krp_vm_type" {
+  type = string
+  description = "Kafka Rest Proxy Virtual Machine type to be created. Default: Standard_D8s_v3"
+  default = "Standard_D8s_v3"
+}
+
+variable "krp_disk_cache_policy" {
+  type = string
+  description = "Kafka Rest Proxy Virtual Machine disk Caching policy. Default: ReadWrite"
+  default = "ReadWrite"
+}
+
+variable "krp_disk_storage_account_type" {
+  type = string
+  description = "Kafka Rest Proxy Virtual Machine Storage Account type. Default: Standard_LRS"
+  default = "Standard_LRS"
+}
+
+variable "c3_count" {
+  description = "Control Center Instances to be created. Default 1"
+  default = 1
+}
+
+variable "c3_vm_type" {
+  type = string
+  description = "Control Center Virtual Machine type to be created. Default: Standard_D4_v3"
+  default = "Standard_D4s_v3"
+}
+
+variable "c3_disk_cache_policy" {
+  type = string
+  description = "Control Center Virtual Machine disk Caching policy. Default: ReadWrite"
+  default = "ReadWrite"
+}
+
+variable "c3_disk_storage_account_type" {
+  type = string
+  description = "Control Center Virtual Machine Storage Account type. Default: Standard_LRS"
   default = "Standard_LRS"
 }
