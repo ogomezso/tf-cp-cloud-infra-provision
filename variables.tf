@@ -59,16 +59,48 @@ variable "zk_vm_type" {
   default = "Standard_D4s_v3"
 }
 
-variable "zk_disk_cache_policy" {
+variable "zk_data_disk_cache_policy" {
   type = string
-  description = "Zookeeper Virtual Machine disk Caching policy. Default: ReadWrite"
+  description = "Zookeeper Virtual Machine data disk Caching policy. Default: ReadWrite"
   default = "ReadWrite"
 }
 
-variable "zk_disk_storage_account_type" {
+variable "zk_data_disk_storage_account_type" {
   type = string
   description = "Zookeeper Virtual Machine Storage Account type. Default: Standard_LRS"
   default = "Standard_LRS"
+}
+
+variable "zk_data_disk_size" {
+  description = "Zookeeper data disk size. Default 1024Gb"
+  default = 1024
+}
+
+variable "zk_data_disk_count" {
+  description = "number of Zookeeper transaction log disks. Default 2"
+  default = 2
+}
+
+variable "zk_log_disk_cache_policy" {
+  type = string
+  description = "Zookeeper Virtual Machine log disk Caching policy. Default: ReadWrite"
+  default = "ReadWrite"
+}
+
+variable "zk_log_disk_storage_account_type" {
+  type = string
+  description = "Zookeeper log disk Storage Account type. Default: Standard_LRS"
+  default = "Standard_LRS"
+}
+
+variable "zk_log_disk_size" {
+  description = "Zookeeper log disk size. Default 512Gb"
+  default = 512
+}
+
+variable "zk_log_disk_count" {
+  description = "number of Zookeeper data disks. Default 1"
+  default = 1
 }
 
 variable "broker_count" {
@@ -81,18 +113,28 @@ variable "broker_vm_type" {
   description = "Kafka Broker Virtual Machine type to be created. Default: Standard_D8_v3"
   default = "Standard_D8s_v3"
 }
-
-variable "broker_disk_cache_policy" {
+variable "broker_log_disk_cache_policy" {
   type = string
-  description = "Kafka Broker Virtual Machine disk Caching policy. Default: ReadWrite"
+  description = "Kafka Broker log disk Caching policy. Default: ReadWrite"
   default = "ReadWrite"
 }
 
-variable "broker_disk_storage_account_type" {
+variable "broker_log_disk_storage_account_type" {
   type = string
-  description = "Kafka Broker Virtual Machine Storage Account type. Default: Standard_LRS"
+  description = "Kafka Broker log disk Storage Account type. Default: Standard_LRS"
   default = "Standard_LRS"
 }
+
+variable "broker_log_disk_size" {
+  description = "Kafka Broker log disk size. Default 512Gb"
+  default = 1024
+}
+
+variable "broker_log_disk_count" {
+  description = "number of Kafka Broker log  disks. Default 2"
+  default = 2
+}
+
 variable "sr_count" {
   description = "Schema Registry Instances to be created. Default 1"
   default = 1
@@ -228,4 +270,9 @@ variable "c3_disk_storage_account_type" {
   type = string
   description = "Control Center Virtual Machine Storage Account type. Default: Standard_LRS"
   default = "Standard_LRS"
+}
+
+variable "c3_disk_size" {
+  description = "Kafka Broker log disk size. Default 128Gb (reduced mode)"
+  default = 128
 }
