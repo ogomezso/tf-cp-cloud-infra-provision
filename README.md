@@ -1,3 +1,3 @@
-# Apache Kafka/Confluent Platform IaaC with Terraform for Azure VMs
+# Apache Kafka/Confluent Platform IaC with Terraform and Cloud Providers
 
-Terraform Scripts for Azure VMs provision to allocate Apache Kafka / Confluent Platform Clusters
+Terraform Scripts cloud provider based VMs provision to allocate Apache Kafka / Confluent Platform Clusters
