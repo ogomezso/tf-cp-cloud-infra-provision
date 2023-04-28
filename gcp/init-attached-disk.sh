@@ -1,7 +1,7 @@
 #!/bin/bash
 set -uxo pipefail
 
-MOUNT_DIR=/mnt/disks/broker-disk
+MOUNT_DIR=/mnt/disks/attached-disk
 DISK_NAME=google-persistent-disk-1
 
 # Check if entry exists in fstab

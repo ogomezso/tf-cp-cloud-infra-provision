@@ -19,6 +19,10 @@ variable "connect_count" {
   default = 1
 }
 
+variable "ksqldb_count" {
+  default = 1
+}
+
 variable "pub_key_path" {
   type = string
   description = "local path to pub key"
@@ -84,6 +88,12 @@ variable "ccc_cidr_prefix" {
   description = "CIDR prefix used by the Control Center nodes"
 }
 
+variable "ksqldb_cidr_prefix" {
+  type = string
+  default = "10.1.6."
+  description = "CIDR prefix used by the ksqldb nodes"
+}
+
 variable "ingress_workstation_source_range" {
   type = list(string)
   description = "List of workstation CIDR range which can access to the platform"
@@ -99,6 +109,18 @@ variable "broker_disk_size" {
   type = number
   default = 50
   description = "Size of GCP disks to be used for broker nodes"
+}
+
+variable "ccc_disk_type" {
+  type = string
+  default = "pd-standard"
+  description = "Type of GCP disks to be used for ccc nodes"
+}
+
+variable "ccc_disk_size" {
+  type = number
+  default = 50
+  description = "Size of GCP disks to be used for ccc nodes"
 }
 
 variable "broker_machine_type" {
@@ -123,6 +145,12 @@ variable "connect_machine_type" {
   type = string
   default = "e2-standard-2"
   description = "Type of GCP machine to be used for Kafka Connect nodes"
+}
+
+variable "ksqldb_machine_type" {
+  type = string
+  default = "e2-standard-2"
+  description = "Type of GCP machine to be used for Kafka KSqldb nodes"
 }
 
 variable "ccc_machine_type" {

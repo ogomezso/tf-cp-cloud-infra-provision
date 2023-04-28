@@ -155,6 +155,20 @@ resource "google_compute_instance" "registries" {
   }
 }
 
+resource "google_compute_disk" "ccc_disks" {
+  count = var.ccc_count
+  name  = "${var.resource_name_prefix}-ccc-${count.index}-disk"
+  type  = var.ccc_disk_type
+  size  = var.ccc_disk_size
+
+  zone = data.google_compute_zones.available.names[count.index % length(data.google_compute_zones.available.names)]
+
+  lifecycle {
+    # Set to true if you need to keep kafka broker log (segments/data)
+    prevent_destroy = false
+  }
+}
+
 resource "google_compute_instance" "ccc" {
   count        = var.ccc_count
   name         = "${var.resource_name_prefix}-ccc-${count.index}"
@@ -167,8 +181,6 @@ resource "google_compute_instance" "ccc" {
   boot_disk {
     initialize_params {
       image = var.os_image_name
-      # TODO: Add another disk for State Stores
-      size  = 50
     }
   }
   metadata = {
@@ -181,6 +193,11 @@ resource "google_compute_instance" "ccc" {
     access_config {
     }
   }
+  attached_disk {
+    source = google_compute_disk.ccc_disks[count.index].id
+  }
+
+  metadata_startup_script = file("${path.module}/init-attached-disk.sh")
 }
 
 resource "google_compute_instance" "connects" {
@@ -207,6 +224,30 @@ resource "google_compute_instance" "connects" {
     access_config {
     }
   }
+}
 
-  # TODO: Add KSqldb nodes
+resource "google_compute_instance" "ksqldbs" {
+  count        = var.ksqldb_count
+  name         = "${var.resource_name_prefix}-ksqldb-${count.index}"
+  machine_type = var.ksqldb_machine_type
+
+  zone = data.google_compute_zones.available.names[count.index % length(data.google_compute_zones.available.names)]
+
+  tags = ["kafka-cluster", "ksqldb"]
+
+  boot_disk {
+    initialize_params {
+      image = var.os_image_name
+    }
+  }
+  metadata = {
+    ssh-keys = "${var.resource_name_prefix}:${file(var.pub_key_path)}"
+  }
+  network_interface {
+    network    = data.google_compute_network.net.self_link
+    subnetwork = data.google_compute_subnetwork.subnet.self_link
+    network_ip = "${var.ksqldb_cidr_prefix}${count.index}"
+    access_config {
+    }
+  }
 }
