@@ -74,13 +74,13 @@ variable "connect_cidr_prefix" {
 
 variable "registry_cidr_prefix" {
   type = string
-  default = "10.1.3."
+  default = "10.1.4."
   description = "CIDR prefix used by the registry nodes"
 }
 
 variable "ccc_cidr_prefix" {
   type = string
-  default = "10.1.4."
+  default = "10.1.5."
   description = "CIDR prefix used by the Control Center nodes"
 }
 
