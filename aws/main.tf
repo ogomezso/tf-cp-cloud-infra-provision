@@ -90,6 +90,16 @@ resource "aws_instance" "zk" {
     volume_size = 20
   }
 
+  ebs_block_device {
+    device_name = "/dev/xvdba"
+    volume_type = var.broker_disk_type
+    volume_size = var.broker_disk_size
+
+    tags = {
+      FileSystem = "/mnt/disks/zk-disk"
+    }
+  }
+
   tags = {
     Name      = "${var.resource_name_prefix}-zk-${count.index}"
     DnsName   = "zk-${count.index}.${var.aws_zone}"

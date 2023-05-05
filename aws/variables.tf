@@ -76,6 +76,19 @@ variable "ccc_disk_size" {
   description = "Size of AWS disks to be used for ccc nodes"
 }
 
+
+variable "zk_disk_type" {
+  type = string
+  default = "gp3"
+  description = "Type of AWS disks to be used for zk nodes"
+}
+
+variable "zk_disk_size" {
+  type = number
+  default = 50
+  description = "Size of AWS disks to be used for zk nodes"
+}
+
 variable "broker_machine_type" {
   type = string
   default = "t2.large"
