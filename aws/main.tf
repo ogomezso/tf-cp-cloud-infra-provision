@@ -80,7 +80,7 @@ resource "aws_route53_record" "connect_record" {
 }
 
 resource "aws_instance" "zk" {
-  ami                    = var.os_image_name 
+  ami                    = var.os_image_name
   instance_type          = var.zk_machine_type
   count                  = var.zookeeper_count
   key_name               = data.aws_key_pair.my_key_pair.key_name
@@ -96,7 +96,7 @@ resource "aws_instance" "zk" {
     volume_size = var.broker_disk_size
 
     tags = {
-      FileSystem = "/mnt/disks/zk-disk"
+      FileSystem = "/mnt/disks/attached-disk"
     }
   }
 
@@ -106,10 +106,12 @@ resource "aws_instance" "zk" {
     SubDomain = "zk-${count.index}"
     DN        = "zk-${count.index}"
   }
+
+  user_data = file("${path.module}/init-attached-disk.sh")
 }
 
 resource "aws_instance" "broker" {
-  ami                    = var.os_image_name 
+  ami                    = var.os_image_name
   instance_type          = var.broker_machine_type
   count                  = var.broker_count
   key_name               = data.aws_key_pair.my_key_pair.key_name
@@ -126,7 +128,7 @@ resource "aws_instance" "broker" {
     volume_size = var.broker_disk_size
 
     tags = {
-      FileSystem = "/mnt/disks/broker-disk"
+      FileSystem = "/mnt/disks/attached-disk"
     }
   }
 
@@ -136,10 +138,12 @@ resource "aws_instance" "broker" {
     SubDomain = "broker-${count.index}"
     DN        = "broker"
   }
+
+  user_data = file("${path.module}/init-attached-disk.sh")
 }
 
 resource "aws_instance" "sr" {
-  ami                    = var.os_image_name 
+  ami                    = var.os_image_name
   instance_type          = var.registry_machine_type
   count                  = var.registry_count
   key_name               = data.aws_key_pair.my_key_pair.key_name
@@ -155,7 +159,7 @@ resource "aws_instance" "sr" {
 }
 
 resource "aws_instance" "kc" {
-  ami                    = var.os_image_name 
+  ami                    = var.os_image_name
   instance_type          = var.ksqldb_machine_type
   count                  = var.ksqldb_count
   key_name               = data.aws_key_pair.my_key_pair.key_name
@@ -171,7 +175,7 @@ resource "aws_instance" "kc" {
 }
 
 resource "aws_instance" "cc" {
-  ami                    = var.os_image_name 
+  ami                    = var.os_image_name
   instance_type          = var.ccc_machine_type
   count                  = var.ccc_count
   key_name               = data.aws_key_pair.my_key_pair.key_name
@@ -188,7 +192,7 @@ resource "aws_instance" "cc" {
     volume_size = var.ccc_disk_size
 
     tags = {
-      FileSystem = "/mnt/disks/ccc-disk"
+      FileSystem = "/mnt/disks/attached-disk"
     }
   }
 
@@ -198,10 +202,12 @@ resource "aws_instance" "cc" {
     SubDomain = "cc-${count.index}"
     DN        = "cc-${count.index}"
   }
+
+  user_data = file("${path.module}/init-attached-disk.sh")
 }
 
 resource "aws_instance" "connect" {
-  ami                    = var.os_image_name 
+  ami                    = var.os_image_name
   instance_type          = "t2.large"
   count                  = var.connect_count
   key_name               = data.aws_key_pair.my_key_pair.key_name
