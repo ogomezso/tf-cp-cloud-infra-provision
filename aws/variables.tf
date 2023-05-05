@@ -51,3 +51,69 @@ variable "aws_region" {
   type = string
   description = "name of the region to be used"
 }
+
+variable "broker_disk_type" {
+  type = string
+  default = "gp3"
+  description = "Type of AWS disks to be used for broker nodes"
+}
+
+variable "broker_disk_size" {
+  type = number
+  default = 50
+  description = "Size of AWS disks to be used for broker nodes"
+}
+
+variable "ccc_disk_type" {
+  type = string
+  default = "gp3"
+  description = "Type of AWS disks to be used for ccc nodes"
+}
+
+variable "ccc_disk_size" {
+  type = number
+  default = 50
+  description = "Size of AWS disks to be used for ccc nodes"
+}
+
+variable "broker_machine_type" {
+  type = string
+  default = "t2.large"
+  description = "Type of AWS machine to be used for broker nodes"
+}
+
+variable "zk_machine_type" {
+  type = string
+  default = "t2.large"
+  description = "Type of AWS machine to be used for zookeeper nodes"
+}
+
+variable "registry_machine_type" {
+  type = string
+  default = "t2.large"
+  description = "Type of AWS machine to be used for registry nodes"
+}
+
+variable "connect_machine_type" {
+  type = string
+  default = "t2.large"
+  description = "Type of AWS machine to be used for Kafka Connect nodes"
+}
+
+variable "ksqldb_machine_type" {
+  type = string
+  default = "t2.large"
+  description = "Type of AWS machine to be used for Kafka KSqldb nodes"
+}
+
+variable "ccc_machine_type" {
+  type = string
+  default = "t2.large"
+  description = "Type of AWS machine to be used for Control Center nodes"
+}
+
+variable "os_image_name" {
+  type = string
+  default = "ami-0cc4e06e6e710cd94" # Ubuntu 20.04 LTS
+  description = "OS image name to be used"
+}

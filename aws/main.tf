@@ -80,8 +80,8 @@ resource "aws_route53_record" "connect_record" {
 }
 
 resource "aws_instance" "zk" {
-  ami                    = "ami-0cc4e06e6e710cd94" # Ubuntu 20.04 LTS
-  instance_type          = "t2.large"
+  ami                    = var.os_image_name 
+  instance_type          = var.zk_machine_type
   count                  = var.zookeeper_count
   key_name               = data.aws_key_pair.my_key_pair.key_name
   vpc_security_group_ids = [data.aws_security_group.security-group.id]
@@ -99,8 +99,8 @@ resource "aws_instance" "zk" {
 }
 
 resource "aws_instance" "broker" {
-  ami                    = "ami-0cc4e06e6e710cd94" # Ubuntu 20.04 LTS
-  instance_type          = "t2.large"
+  ami                    = var.os_image_name 
+  instance_type          = var.broker_machine_type
   count                  = var.broker_count
   key_name               = data.aws_key_pair.my_key_pair.key_name
   vpc_security_group_ids = [data.aws_security_group.security-group.id]
@@ -108,6 +108,16 @@ resource "aws_instance" "broker" {
 
   root_block_device {
     volume_size = 20
+  }
+
+  ebs_block_device {
+    device_name = "/dev/xvdba"
+    volume_type = var.broker_disk_type
+    volume_size = var.broker_disk_size
+
+    tags = {
+      FileSystem = "/mnt/disks/broker-disk"
+    }
   }
 
   tags = {
@@ -119,8 +129,8 @@ resource "aws_instance" "broker" {
 }
 
 resource "aws_instance" "sr" {
-  ami                    = "ami-0cc4e06e6e710cd94" # Ubuntu 20.04 LTS
-  instance_type          = "t2.large"
+  ami                    = var.os_image_name 
+  instance_type          = var.registry_machine_type
   count                  = var.registry_count
   key_name               = data.aws_key_pair.my_key_pair.key_name
   vpc_security_group_ids = [data.aws_security_group.security-group.id]
@@ -135,8 +145,8 @@ resource "aws_instance" "sr" {
 }
 
 resource "aws_instance" "kc" {
-  ami                    = "ami-0cc4e06e6e710cd94" # Ubuntu 20.04 LTS
-  instance_type          = "t2.large"
+  ami                    = var.os_image_name 
+  instance_type          = var.ksqldb_machine_type
   count                  = var.ksqldb_count
   key_name               = data.aws_key_pair.my_key_pair.key_name
   vpc_security_group_ids = [data.aws_security_group.security-group.id]
@@ -151,8 +161,8 @@ resource "aws_instance" "kc" {
 }
 
 resource "aws_instance" "cc" {
-  ami                    = "ami-0cc4e06e6e710cd94" # Ubuntu 20.04 LTS
-  instance_type          = "t2.large"
+  ami                    = var.os_image_name 
+  instance_type          = var.ccc_machine_type
   count                  = var.ccc_count
   key_name               = data.aws_key_pair.my_key_pair.key_name
   vpc_security_group_ids = [data.aws_security_group.security-group.id]
@@ -160,6 +170,16 @@ resource "aws_instance" "cc" {
 
   root_block_device {
     volume_size = 20
+  }
+
+  ebs_block_device {
+    device_name = "/dev/xvdba"
+    volume_type = var.ccc_disk_type
+    volume_size = var.ccc_disk_size
+
+    tags = {
+      FileSystem = "/mnt/disks/ccc-disk"
+    }
   }
 
   tags = {
@@ -171,7 +191,7 @@ resource "aws_instance" "cc" {
 }
 
 resource "aws_instance" "connect" {
-  ami                    = "ami-0cc4e06e6e710cd94" # Ubuntu 20.04 LTS
+  ami                    = var.os_image_name 
   instance_type          = "t2.large"
   count                  = var.connect_count
   key_name               = data.aws_key_pair.my_key_pair.key_name
