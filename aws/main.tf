@@ -29,44 +29,44 @@ resource "aws_route53_record" "broker_record" {
   records = [aws_instance.broker[count.index].public_ip]
 }
 
-resource "aws_route53_record" "zk_record" {
-  count   = length(aws_instance.zk)
+resource "aws_route53_record" "zookeeper_record" {
+  count   = length(aws_instance.zookeeper)
   zone_id = data.aws_route53_zone.zone.zone_id
-  name    = format("%s.%s", aws_instance.zk[count.index].tags.SubDomain, var.aws_zone)
+  name    = format("%s.%s", aws_instance.zookeeper[count.index].tags.SubDomain, var.aws_zone)
   type    = "A"
   ttl     = "300"
 
-  records = [aws_instance.zk[count.index].public_ip]
+  records = [aws_instance.zookeeper[count.index].public_ip]
 }
 
-resource "aws_route53_record" "sr_record" {
-  count   = length(aws_instance.sr)
+resource "aws_route53_record" "registry_record" {
+  count   = length(aws_instance.registry)
   zone_id = data.aws_route53_zone.zone.zone_id
-  name    = format("%s.%s", aws_instance.sr[count.index].tags.SubDomain, var.aws_zone)
+  name    = format("%s.%s", aws_instance.registry[count.index].tags.SubDomain, var.aws_zone)
   type    = "A"
   ttl     = "300"
 
-  records = [aws_instance.sr[count.index].public_ip]
+  records = [aws_instance.registry[count.index].public_ip]
 }
 
-resource "aws_route53_record" "kc_record" {
-  count   = length(aws_instance.kc)
+resource "aws_route53_record" "ksqldb_record" {
+  count   = length(aws_instance.ksqldb)
   zone_id = data.aws_route53_zone.zone.zone_id
-  name    = format("%s.%s", aws_instance.kc[count.index].tags.SubDomain, var.aws_zone)
+  name    = format("%s.%s", aws_instance.ksqldb[count.index].tags.SubDomain, var.aws_zone)
   type    = "A"
   ttl     = "300"
 
-  records = [aws_instance.kc[count.index].public_ip]
+  records = [aws_instance.ksqldb[count.index].public_ip]
 }
 
-resource "aws_route53_record" "cc_record" {
-  count   = length(aws_instance.cc)
+resource "aws_route53_record" "ccc_record" {
+  count   = length(aws_instance.ccc)
   zone_id = data.aws_route53_zone.zone.zone_id
-  name    = format("%s.%s", aws_instance.cc[count.index].tags.SubDomain, var.aws_zone)
+  name    = format("%s.%s", aws_instance.ccc[count.index].tags.SubDomain, var.aws_zone)
   type    = "A"
   ttl     = "300"
 
-  records = [aws_instance.cc[count.index].public_ip]
+  records = [aws_instance.ccc[count.index].public_ip]
 }
 
 resource "aws_route53_record" "connect_record" {
@@ -79,9 +79,9 @@ resource "aws_route53_record" "connect_record" {
   records = [aws_instance.connect[count.index].public_ip]
 }
 
-resource "aws_instance" "zk" {
-  ami                    = var.os_image_name 
-  instance_type          = var.zk_machine_type
+resource "aws_instance" "zookeeper" {
+  ami                    = var.os_image_name
+  instance_type          = var.zookeeper_machine_type
   count                  = var.zookeeper_count
   key_name               = data.aws_key_pair.my_key_pair.key_name
   vpc_security_group_ids = [data.aws_security_group.security-group.id]
@@ -96,20 +96,22 @@ resource "aws_instance" "zk" {
     volume_size = var.broker_disk_size
 
     tags = {
-      FileSystem = "/mnt/disks/zk-disk"
+      FileSystem = "/mnt/disks/attached-disk"
     }
   }
 
   tags = {
-    Name      = "${var.resource_name_prefix}-zk-${count.index}"
-    DnsName   = "zk-${count.index}.${var.aws_zone}"
-    SubDomain = "zk-${count.index}"
-    DN        = "zk-${count.index}"
+    Name      = "${var.resource_name_prefix}-zookeeper-${count.index}"
+    DnsName   = "zookeeper-${count.index}.${var.aws_zone}"
+    SubDomain = "zookeeper-${count.index}"
+    DN        = "zookeeper-${count.index}"
   }
+
+  user_data = file("${path.module}/init-attached-disk.sh")
 }
 
 resource "aws_instance" "broker" {
-  ami                    = var.os_image_name 
+  ami                    = var.os_image_name
   instance_type          = var.broker_machine_type
   count                  = var.broker_count
   key_name               = data.aws_key_pair.my_key_pair.key_name
@@ -126,7 +128,7 @@ resource "aws_instance" "broker" {
     volume_size = var.broker_disk_size
 
     tags = {
-      FileSystem = "/mnt/disks/broker-disk"
+      FileSystem = "/mnt/disks/attached-disk"
     }
   }
 
@@ -136,10 +138,12 @@ resource "aws_instance" "broker" {
     SubDomain = "broker-${count.index}"
     DN        = "broker"
   }
+
+  user_data = file("${path.module}/init-attached-disk.sh")
 }
 
-resource "aws_instance" "sr" {
-  ami                    = var.os_image_name 
+resource "aws_instance" "registry" {
+  ami                    = var.os_image_name
   instance_type          = var.registry_machine_type
   count                  = var.registry_count
   key_name               = data.aws_key_pair.my_key_pair.key_name
@@ -147,15 +151,15 @@ resource "aws_instance" "sr" {
   availability_zone      = data.aws_availability_zones.available.names[count.index % length(data.aws_availability_zones.available.names)]
 
   tags = {
-    Name      = "${var.resource_name_prefix}-sr-${count.index}"
-    DnsName   = "sr-${count.index}.${var.aws_zone}"
-    SubDomain = "sr-${count.index}"
-    DN        = "sr-${count.index}"
+    Name      = "${var.resource_name_prefix}-registry-${count.index}"
+    DnsName   = "registry-${count.index}.${var.aws_zone}"
+    SubDomain = "registry-${count.index}"
+    DN        = "registry-${count.index}"
   }
 }
 
-resource "aws_instance" "kc" {
-  ami                    = var.os_image_name 
+resource "aws_instance" "ksqldb" {
+  ami                    = var.os_image_name
   instance_type          = var.ksqldb_machine_type
   count                  = var.ksqldb_count
   key_name               = data.aws_key_pair.my_key_pair.key_name
@@ -163,15 +167,15 @@ resource "aws_instance" "kc" {
   availability_zone      = data.aws_availability_zones.available.names[count.index % length(data.aws_availability_zones.available.names)]
 
   tags = {
-    Name      = "${var.resource_name_prefix}-kc-${count.index}"
-    DnsName   = "kc-${count.index}.${var.aws_zone}"
-    SubDomain = "kc-${count.index}"
-    DN        = "kc-${count.index}"
+    Name      = "${var.resource_name_prefix}-ksqldb-${count.index}"
+    DnsName   = "ksqldb-${count.index}.${var.aws_zone}"
+    SubDomain = "ksqldb-${count.index}"
+    DN        = "ksqldb-${count.index}"
   }
 }
 
-resource "aws_instance" "cc" {
-  ami                    = var.os_image_name 
+resource "aws_instance" "ccc" {
+  ami                    = var.os_image_name
   instance_type          = var.ccc_machine_type
   count                  = var.ccc_count
   key_name               = data.aws_key_pair.my_key_pair.key_name
@@ -188,20 +192,22 @@ resource "aws_instance" "cc" {
     volume_size = var.ccc_disk_size
 
     tags = {
-      FileSystem = "/mnt/disks/ccc-disk"
+      FileSystem = "/mnt/disks/attached-disk"
     }
   }
 
   tags = {
-    Name      = "${var.resource_name_prefix}-cc-${count.index}"
-    DnsName   = "cc-${count.index}.${var.aws_zone}"
-    SubDomain = "cc-${count.index}"
-    DN        = "cc-${count.index}"
+    Name      = "${var.resource_name_prefix}-ccc-${count.index}"
+    DnsName   = "ccc-${count.index}.${var.aws_zone}"
+    SubDomain = "ccc-${count.index}"
+    DN        = "ccc-${count.index}"
   }
+
+  user_data = file("${path.module}/init-attached-disk.sh")
 }
 
 resource "aws_instance" "connect" {
-  ami                    = var.os_image_name 
+  ami                    = var.os_image_name
   instance_type          = "t2.large"
   count                  = var.connect_count
   key_name               = data.aws_key_pair.my_key_pair.key_name
@@ -227,7 +233,7 @@ output "aws_nameservers" {
 
 output "all_hosts_join" {
   value = join("\n", [
-    for instance in setunion(aws_instance.cc, aws_instance.kc, aws_instance.sr, aws_instance.broker, aws_instance.zk) :
+    for instance in setunion(aws_instance.ccc, aws_instance.ksqldb, aws_instance.registry, aws_instance.broker, aws_instance.zookeeper) :
     format("%s#%s#%s#%s", instance.tags.DnsName, instance.private_dns, instance.private_ip, instance.tags.DN)
   ])
 }

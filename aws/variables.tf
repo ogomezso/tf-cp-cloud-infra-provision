@@ -77,16 +77,16 @@ variable "ccc_disk_size" {
 }
 
 
-variable "zk_disk_type" {
+variable "zookeeper_disk_type" {
   type = string
   default = "gp3"
-  description = "Type of AWS disks to be used for zk nodes"
+  description = "Type of AWS disks to be used for zookeeper nodes"
 }
 
-variable "zk_disk_size" {
+variable "zookeeper_disk_size" {
   type = number
   default = 50
-  description = "Size of AWS disks to be used for zk nodes"
+  description = "Size of AWS disks to be used for zookeeper nodes"
 }
 
 variable "broker_machine_type" {
@@ -95,7 +95,7 @@ variable "broker_machine_type" {
   description = "Type of AWS machine to be used for broker nodes"
 }
 
-variable "zk_machine_type" {
+variable "zookeeper_machine_type" {
   type = string
   default = "t2.large"
   description = "Type of AWS machine to be used for zookeeper nodes"
