@@ -276,3 +276,8 @@ variable "c3_disk_size" {
   description = "Kafka Broker log disk size. Default 128Gb (reduced mode)"
   default = 128
 }
+
+variable "owner_email_tag" {
+  description = "Azure resource owner email"
+  default = "ogomezsoriano@confluent.io"
+}
