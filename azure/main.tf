@@ -11,6 +11,11 @@ data "azurerm_virtual_network" "vnet" {
   resource_group_name = data.azurerm_resource_group.resource_group.name
 }
 
+data "azurerm_dns_zone" "dns_zone" {
+  name                = "a84984035e7f4871b63e.eastus.aksapp.io"
+  resource_group_name = "mc_james_g_resource_group_2_james_g_educative_cluster_2_eastus"
+}
+
 locals {
   zk_data_disks = flatten([
     for zk in range(0, var.zk_count) : [
@@ -60,6 +65,9 @@ resource "azurerm_network_interface" "zk_nic" {
     subnet_id                     = azurerm_subnet.cluster_subnet.id
     private_ip_address_allocation = "Dynamic"
   }
+  tags = {
+    owner_email = var.owner_email_tag
+  }
 }
 
 resource "azurerm_linux_virtual_machine" "zk" {
@@ -89,6 +97,9 @@ resource "azurerm_linux_virtual_machine" "zk" {
     sku       = var.source_image_sku
     version   = "latest"
   }
+  tags = {
+    owner_email = var.owner_email_tag
+  }
 }
 
 resource "azurerm_managed_disk" "zk_data_disk" {
@@ -99,6 +110,9 @@ resource "azurerm_managed_disk" "zk_data_disk" {
   storage_account_type = var.zk_data_disk_storage_account_type
   create_option        = "Empty"
   disk_size_gb         = var.zk_data_disk_size
+  tags = {
+    owner_email = var.owner_email_tag
+  }
 }
 
 resource "azurerm_virtual_machine_data_disk_attachment" "zk_data_disk_attachment" {
@@ -117,6 +131,9 @@ resource "azurerm_managed_disk" "zk_log_disk" {
   storage_account_type = var.zk_log_disk_storage_account_type
   create_option        = "Empty"
   disk_size_gb         = var.zk_log_disk_size
+  tags = {
+    owner_email = var.owner_email_tag
+  }
 }
 
 resource "azurerm_virtual_machine_data_disk_attachment" "zk_log_disk_attachment" {
@@ -135,6 +152,9 @@ resource "azurerm_public_ip" "broker_pip" {
   location            = data.azurerm_resource_group.resource_group.location
   resource_group_name = data.azurerm_resource_group.resource_group.name
   allocation_method   = "Dynamic"
+  tags = {
+    owner_email = var.owner_email_tag
+  }
 }
 
 resource "azurerm_network_interface" "broker_nic" {
@@ -148,6 +168,9 @@ resource "azurerm_network_interface" "broker_nic" {
     subnet_id                     = azurerm_subnet.cluster_subnet.id
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.broker_pip[count.index].id
+  }
+  tags = {
+    owner_email = var.owner_email_tag
   }
 }
 
@@ -178,6 +201,10 @@ resource "azurerm_linux_virtual_machine" "broker" {
     sku       = var.source_image_sku
     version   = "latest"
   }
+
+  tags = {
+    owner_email = var.owner_email_tag
+  }
 }
 
 resource "azurerm_managed_disk" "broker_log_disk" {
@@ -188,6 +215,9 @@ resource "azurerm_managed_disk" "broker_log_disk" {
   storage_account_type = var.broker_log_disk_storage_account_type
   create_option        = "Empty"
   disk_size_gb         = var.broker_log_disk_size
+  tags = {
+    owner_email = var.owner_email_tag
+  }
 }
 
 resource "azurerm_virtual_machine_data_disk_attachment" "broker_log_disk_attachment" {
@@ -206,6 +236,9 @@ resource "azurerm_public_ip" "sr_pip" {
   location            = data.azurerm_resource_group.resource_group.location
   resource_group_name = data.azurerm_resource_group.resource_group.name
   allocation_method   = "Dynamic"
+  tags = {
+    owner_email = var.owner_email_tag
+  }
 }
 
 resource "azurerm_network_interface" "sr_nic" {
@@ -219,6 +252,9 @@ resource "azurerm_network_interface" "sr_nic" {
     subnet_id                     = azurerm_subnet.cluster_subnet.id
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.sr_pip[count.index].id
+  }
+  tags = {
+    owner_email = var.owner_email_tag
   }
 }
 
@@ -249,6 +285,10 @@ resource "azurerm_linux_virtual_machine" "sr" {
     sku       = var.source_image_sku
     version   = "latest"
   }
+
+  tags = {
+    owner_email = var.owner_email_tag
+  }
 }
 
 ### Kafka Connect 
@@ -259,6 +299,9 @@ resource "azurerm_public_ip" "connect_pip" {
   location            = data.azurerm_resource_group.resource_group.location
   resource_group_name = data.azurerm_resource_group.resource_group.name
   allocation_method   = "Dynamic"
+  tags = {
+    owner_email = var.owner_email_tag
+  }
 }
 
 resource "azurerm_network_interface" "connect_nic" {
@@ -272,6 +315,9 @@ resource "azurerm_network_interface" "connect_nic" {
     subnet_id                     = azurerm_subnet.cluster_subnet.id
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.connect_pip[count.index].id
+  }
+  tags = {
+    owner_email = var.owner_email_tag
   }
 }
 
@@ -302,6 +348,10 @@ resource "azurerm_linux_virtual_machine" "connect" {
     sku       = var.source_image_sku
     version   = "latest"
   }
+
+  tags = {
+    owner_email = var.owner_email_tag
+  }
 }
 
 ### Replicator 
@@ -312,6 +362,9 @@ resource "azurerm_public_ip" "replicator_pip" {
   location            = data.azurerm_resource_group.resource_group.location
   resource_group_name = data.azurerm_resource_group.resource_group.name
   allocation_method   = "Dynamic"
+  tags = {
+    owner_email = var.owner_email_tag
+  }
 }
 
 resource "azurerm_network_interface" "replicator_nic" {
@@ -325,6 +378,9 @@ resource "azurerm_network_interface" "replicator_nic" {
     subnet_id                     = azurerm_subnet.cluster_subnet.id
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.replicator_pip[count.index].id
+  }
+  tags = {
+    owner_email = var.owner_email_tag
   }
 }
 
@@ -365,6 +421,9 @@ resource "azurerm_public_ip" "ksql_pip" {
   location            = data.azurerm_resource_group.resource_group.location
   resource_group_name = data.azurerm_resource_group.resource_group.name
   allocation_method   = "Dynamic"
+  tags = {
+    owner_email = var.owner_email_tag
+  }
 }
 
 resource "azurerm_network_interface" "ksql_nic" {
@@ -378,6 +437,9 @@ resource "azurerm_network_interface" "ksql_nic" {
     subnet_id                     = azurerm_subnet.cluster_subnet.id
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.ksql_pip[count.index].id
+  }
+  tags = {
+    owner_email = var.owner_email_tag
   }
 }
 
@@ -408,6 +470,10 @@ resource "azurerm_linux_virtual_machine" "ksql" {
     sku       = var.source_image_sku
     version   = "latest"
   }
+
+  tags = {
+    owner_email = var.owner_email_tag
+  }
 }
 
 ### Kafka Rest Proxy 
@@ -418,6 +484,9 @@ resource "azurerm_public_ip" "krp_pip" {
   location            = data.azurerm_resource_group.resource_group.location
   resource_group_name = data.azurerm_resource_group.resource_group.name
   allocation_method   = "Dynamic"
+  tags = {
+    owner_email = var.owner_email_tag
+  }
 }
 
 resource "azurerm_network_interface" "krp_nic" {
@@ -431,6 +500,9 @@ resource "azurerm_network_interface" "krp_nic" {
     subnet_id                     = azurerm_subnet.cluster_subnet.id
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.krp_pip[count.index].id
+  }
+  tags = {
+    owner_email = var.owner_email_tag
   }
 }
 
@@ -461,6 +533,9 @@ resource "azurerm_linux_virtual_machine" "krp" {
     sku       = var.source_image_sku
     version   = "latest"
   }
+  tags = {
+    owner_email = var.owner_email_tag
+  }
 }
 
 ### Control Center 
@@ -471,6 +546,9 @@ resource "azurerm_public_ip" "c3_pip" {
   location            = data.azurerm_resource_group.resource_group.location
   resource_group_name = data.azurerm_resource_group.resource_group.name
   allocation_method   = "Dynamic"
+  tags = {
+    owner_email = var.owner_email_tag
+  }
 }
 
 resource "azurerm_network_interface" "c3_nic" {
@@ -484,6 +562,9 @@ resource "azurerm_network_interface" "c3_nic" {
     subnet_id                     = azurerm_subnet.cluster_subnet.id
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.c3_pip[count.index].id
+  }
+  tags = {
+    owner_email = var.owner_email_tag
   }
 }
 
@@ -514,6 +595,9 @@ resource "azurerm_linux_virtual_machine" "c3" {
     sku       = var.source_image_sku
     version   = "latest"
   }
+  tags = {
+    owner_email = var.owner_email_tag
+  }
 }
 resource "azurerm_managed_disk" "c3_disk" {
   count                = var.c3_count
@@ -523,6 +607,9 @@ resource "azurerm_managed_disk" "c3_disk" {
   storage_account_type = var.c3_disk_storage_account_type
   create_option        = "Empty"
   disk_size_gb         = var.c3_disk_size
+  tags = {
+    owner_email = var.owner_email_tag
+  }
 }
 
 resource "azurerm_virtual_machine_data_disk_attachment" "c3_disk_attachment" {
