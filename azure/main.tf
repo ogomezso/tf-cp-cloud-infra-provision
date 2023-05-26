@@ -159,11 +159,12 @@ resource "azurerm_public_ip" "broker_pip" {
 }
 
 resource "azurerm_dns_cname_record" "public_dns_broker_record" {
-  name                = "${var.resource_group_name}-${var.subnet_name}-broker_record"
+  count               = var.broker_count
+  name                = "${var.resource_group_name}-${var.subnet_name}-broker_record-${count.index}"
   zone_name           = data.azurerm_dns_zone.dns_zone.name
   resource_group_name = data.azurerm_resource_group.resource_group.name
   ttl                 = "300"
-  record              = azurerm_public_ip.broker_pip.fqdn
+  record              = azurerm_public_ip.broker_pip[count.index].fqdn
   tags = {
     owner_email = var.owner_email_tag
   }
@@ -255,11 +256,12 @@ resource "azurerm_public_ip" "sr_pip" {
 }
 
 resource "azurerm_dns_cname_record" "public_dns_sr_record" {
-  name                = "${var.resource_group_name}-${var.subnet_name}-sr_record"
+  count               = var.sr_count
+  name                = "${var.resource_group_name}-${var.subnet_name}-sr_record-${count.index}"
   zone_name           = data.azurerm_dns_zone.dns_zone.name
   resource_group_name = data.azurerm_resource_group.resource_group.name
   ttl                 = "300"
-  record              = azurerm_public_ip.sr_pip.fqdn
+  record              = azurerm_public_ip.sr_pip[count.index].fqdn
   tags = {
     owner_email = var.owner_email_tag
   }
@@ -330,11 +332,12 @@ resource "azurerm_public_ip" "connect_pip" {
 }
 
 resource "azurerm_dns_cname_record" "public_dns_connect_record" {
-  name                = "${var.resource_group_name}-${var.subnet_name}-connect_record"
+  count               = var.connect_count
+  name                = "${var.resource_group_name}-${var.subnet_name}-connect_record-${count.index}"
   zone_name           = data.azurerm_dns_zone.dns_zone.name
   resource_group_name = data.azurerm_resource_group.resource_group.name
   ttl                 = "300"
-  record              = azurerm_public_ip.connect_pip.fqdn
+  record              = azurerm_public_ip.connect_pip[count.index].fqdn
   tags = {
     owner_email = var.owner_email_tag
   }
@@ -527,11 +530,12 @@ resource "azurerm_public_ip" "krp_pip" {
 }
 
 resource "azurerm_dns_cname_record" "public_dns_krp_record" {
-  name                = "${var.resource_group_name}-${var.subnet_name}-krp_record"
+  count               = var.krp_count
+  name                = "${var.resource_group_name}-${var.subnet_name}-krp_record-${count.index}"
   zone_name           = data.azurerm_dns_zone.dns_zone.name
   resource_group_name = data.azurerm_resource_group.resource_group.name
   ttl                 = "300"
-  record              = azurerm_public_ip.krp_pip.fqdn
+  record              = azurerm_public_ip.krp_pip[count.index].fqdn
   tags = {
     owner_email = var.owner_email_tag
   }
@@ -601,11 +605,12 @@ resource "azurerm_public_ip" "c3_pip" {
 }
 
 resource "azurerm_dns_cname_record" "public_dns_c3_record" {
-  name                = "${var.resource_group_name}-${var.subnet_name}-c3_record"
+  count               = var.c3_count
+  name                = "${var.resource_group_name}-${var.subnet_name}-c3_record-${count.index}"
   zone_name           = data.azurerm_dns_zone.dns_zone.name
   resource_group_name = data.azurerm_resource_group.resource_group.name
   ttl                 = "300"
-  record              = azurerm_public_ip.c3_pip.fqdn
+  record              = azurerm_public_ip.c3_pip[count.index].fqdn
   tags = {
     owner_email = var.owner_email_tag
   }
