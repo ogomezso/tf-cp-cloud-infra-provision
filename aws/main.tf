@@ -13,6 +13,7 @@ data "aws_security_group" "security-group" {
 
 data "aws_route53_zone" "zone" {
   name = var.aws_zone
+  private_zone = true
 }
 
 data "aws_availability_zones" "available" {
@@ -26,7 +27,7 @@ resource "aws_route53_record" "broker_record" {
   type    = "A"
   ttl     = "300"
 
-  records = [aws_instance.broker[count.index].public_ip]
+  records = [aws_instance.broker[count.index].private_ip]
 }
 
 resource "aws_route53_record" "zookeeper_record" {
@@ -36,7 +37,7 @@ resource "aws_route53_record" "zookeeper_record" {
   type    = "A"
   ttl     = "300"
 
-  records = [aws_instance.zookeeper[count.index].public_ip]
+  records = [aws_instance.zookeeper[count.index].private_ip]
 }
 
 resource "aws_route53_record" "registry_record" {
@@ -46,7 +47,7 @@ resource "aws_route53_record" "registry_record" {
   type    = "A"
   ttl     = "300"
 
-  records = [aws_instance.registry[count.index].public_ip]
+  records = [aws_instance.registry[count.index].private_ip]
 }
 
 resource "aws_route53_record" "ksqldb_record" {
@@ -56,7 +57,7 @@ resource "aws_route53_record" "ksqldb_record" {
   type    = "A"
   ttl     = "300"
 
-  records = [aws_instance.ksqldb[count.index].public_ip]
+  records = [aws_instance.ksqldb[count.index].private_ip]
 }
 
 resource "aws_route53_record" "ccc_record" {
@@ -66,7 +67,7 @@ resource "aws_route53_record" "ccc_record" {
   type    = "A"
   ttl     = "300"
 
-  records = [aws_instance.ccc[count.index].public_ip]
+  records = [aws_instance.ccc[count.index].private_ip]
 }
 
 resource "aws_route53_record" "connect_record" {
@@ -76,7 +77,7 @@ resource "aws_route53_record" "connect_record" {
   type    = "A"
   ttl     = "300"
 
-  records = [aws_instance.connect[count.index].public_ip]
+  records = [aws_instance.connect[count.index].private_ip]
 }
 
 resource "aws_instance" "zookeeper" {
