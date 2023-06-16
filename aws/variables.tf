@@ -42,6 +42,16 @@ variable "aws_zone" {
   description = "AWS route53 zone"
 }
 
+variable "aws_reverse_zone" {
+  type        = string
+  description = "AWS route53 reverse DNS zone"
+}
+
+variable "aws_vpc" {
+  type        = string
+  description = "AWS vpc"
+}
+
 variable "resource_name_prefix" {
   type = string
   description = "common prefix for all resources"
