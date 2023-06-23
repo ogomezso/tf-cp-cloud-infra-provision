@@ -12,8 +12,8 @@ data "azurerm_virtual_network" "vnet" {
 }
 
 data "azurerm_dns_zone" "dns_zone" {
-  name                = "a84984035e7f4871b63e.eastus.aksapp.io"
-  resource_group_name = "mc_james_g_resource_group_2_james_g_educative_cluster_2_eastus"
+  name                = "a51245098a7f4871a33b.eastus.aksapp.io"
+  resource_group_name = data.azurerm_resource_group.resource_group.name
 }
 
 locals {
@@ -152,6 +152,19 @@ resource "azurerm_public_ip" "broker_pip" {
   location            = data.azurerm_resource_group.resource_group.location
   resource_group_name = data.azurerm_resource_group.resource_group.name
   allocation_method   = "Dynamic"
+  domain_name_label   = "${var.resource_group_name}-${var.subnet_name}-broker-${count.index}"
+  tags = {
+    owner_email = var.owner_email_tag
+  }
+}
+
+resource "azurerm_dns_cname_record" "public_dns_broker_record" {
+  count               = var.broker_count
+  name                = "${var.resource_group_name}-${var.subnet_name}-broker_record-${count.index}"
+  zone_name           = data.azurerm_dns_zone.dns_zone.name
+  resource_group_name = data.azurerm_resource_group.resource_group.name
+  ttl                 = "300"
+  record              = azurerm_public_ip.broker_pip[count.index].fqdn
   tags = {
     owner_email = var.owner_email_tag
   }
@@ -236,6 +249,19 @@ resource "azurerm_public_ip" "sr_pip" {
   location            = data.azurerm_resource_group.resource_group.location
   resource_group_name = data.azurerm_resource_group.resource_group.name
   allocation_method   = "Dynamic"
+  domain_name_label   = "${var.resource_group_name}-${var.subnet_name}-sr-${count.index}"
+  tags = {
+    owner_email = var.owner_email_tag
+  }
+}
+
+resource "azurerm_dns_cname_record" "public_dns_sr_record" {
+  count               = var.sr_count
+  name                = "${var.resource_group_name}-${var.subnet_name}-sr_record-${count.index}"
+  zone_name           = data.azurerm_dns_zone.dns_zone.name
+  resource_group_name = data.azurerm_resource_group.resource_group.name
+  ttl                 = "300"
+  record              = azurerm_public_ip.sr_pip[count.index].fqdn
   tags = {
     owner_email = var.owner_email_tag
   }
@@ -299,6 +325,19 @@ resource "azurerm_public_ip" "connect_pip" {
   location            = data.azurerm_resource_group.resource_group.location
   resource_group_name = data.azurerm_resource_group.resource_group.name
   allocation_method   = "Dynamic"
+  domain_name_label   = "${var.resource_group_name}-${var.subnet_name}-connect-${count.index}"
+  tags = {
+    owner_email = var.owner_email_tag
+  }
+}
+
+resource "azurerm_dns_cname_record" "public_dns_connect_record" {
+  count               = var.connect_count
+  name                = "${var.resource_group_name}-${var.subnet_name}-connect_record-${count.index}"
+  zone_name           = data.azurerm_dns_zone.dns_zone.name
+  resource_group_name = data.azurerm_resource_group.resource_group.name
+  ttl                 = "300"
+  record              = azurerm_public_ip.connect_pip[count.index].fqdn
   tags = {
     owner_email = var.owner_email_tag
   }
@@ -484,6 +523,19 @@ resource "azurerm_public_ip" "krp_pip" {
   location            = data.azurerm_resource_group.resource_group.location
   resource_group_name = data.azurerm_resource_group.resource_group.name
   allocation_method   = "Dynamic"
+  domain_name_label   = "${var.resource_group_name}-${var.subnet_name}-krp-${count.index}"
+  tags = {
+    owner_email = var.owner_email_tag
+  }
+}
+
+resource "azurerm_dns_cname_record" "public_dns_krp_record" {
+  count               = var.krp_count
+  name                = "${var.resource_group_name}-${var.subnet_name}-krp_record-${count.index}"
+  zone_name           = data.azurerm_dns_zone.dns_zone.name
+  resource_group_name = data.azurerm_resource_group.resource_group.name
+  ttl                 = "300"
+  record              = azurerm_public_ip.krp_pip[count.index].fqdn
   tags = {
     owner_email = var.owner_email_tag
   }
@@ -546,6 +598,19 @@ resource "azurerm_public_ip" "c3_pip" {
   location            = data.azurerm_resource_group.resource_group.location
   resource_group_name = data.azurerm_resource_group.resource_group.name
   allocation_method   = "Dynamic"
+  domain_name_label   = "${var.resource_group_name}-${var.subnet_name}-c3-${count.index}"
+  tags = {
+    owner_email = var.owner_email_tag
+  }
+}
+
+resource "azurerm_dns_cname_record" "public_dns_c3_record" {
+  count               = var.c3_count
+  name                = "${var.resource_group_name}-${var.subnet_name}-c3_record-${count.index}"
+  zone_name           = data.azurerm_dns_zone.dns_zone.name
+  resource_group_name = data.azurerm_resource_group.resource_group.name
+  ttl                 = "300"
+  record              = azurerm_public_ip.c3_pip[count.index].fqdn
   tags = {
     owner_email = var.owner_email_tag
   }
