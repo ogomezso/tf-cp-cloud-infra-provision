@@ -13,10 +13,30 @@ data "aws_security_group" "security-group" {
 
 data "aws_route53_zone" "zone" {
   name = var.aws_zone
+  private_zone = true
+}
+
+data "aws_route53_zone" "reverse_zone" {
+  name         = var.aws_reverse_zone
+  private_zone = true
 }
 
 data "aws_availability_zones" "available" {
   state = "available"
+}
+
+data "aws_vpc" "vpc" {
+  id = var.aws_vpc
+}
+
+data "aws_subnet" "subnets" {
+  count             = length(data.aws_availability_zones.available.names)
+  vpc_id            = var.aws_vpc
+  availability_zone = data.aws_availability_zones.available.names[count.index % length(data.aws_availability_zones.available.names)]
+
+  tags = {
+    Name = "${var.resource_name_prefix}-subnet-${data.aws_availability_zones.available.names[count.index % length(data.aws_availability_zones.available.names)]}"
+  }
 }
 
 resource "aws_route53_record" "broker_record" {
@@ -26,7 +46,7 @@ resource "aws_route53_record" "broker_record" {
   type    = "A"
   ttl     = "300"
 
-  records = [aws_instance.broker[count.index].public_ip]
+  records = [aws_instance.broker[count.index].private_ip]
 }
 
 resource "aws_route53_record" "zookeeper_record" {
@@ -36,7 +56,34 @@ resource "aws_route53_record" "zookeeper_record" {
   type    = "A"
   ttl     = "300"
 
-  records = [aws_instance.zookeeper[count.index].public_ip]
+  records = [aws_instance.zookeeper[count.index].private_ip]
+}
+
+# This is used for mtls on zookeeper (https://issues.apache.org/jira/browse/ZOOKEEPER-2858)
+resource "aws_route53_record" "broker_reverse_record" {
+  count   = length(aws_instance.broker)
+  zone_id = data.aws_route53_zone.reverse_zone.zone_id
+  name    = format("%s.%s.%s.%s.in-addr.arpa",
+    element(split(".", aws_instance.broker[count.index].private_ip), 3),
+    element(split(".", aws_instance.broker[count.index].private_ip), 2),
+    element(split(".", aws_instance.broker[count.index].private_ip), 1),
+    element(split(".", aws_instance.broker[count.index].private_ip), 0))
+  type    = "PTR"
+  ttl     = "300"
+  records = [format("%s.%s", aws_instance.broker[count.index].tags.SubDomain, var.aws_zone)]
+}
+
+resource "aws_route53_record" "zookeeper_reverse_record" {
+  count   = length(aws_instance.zookeeper)
+  zone_id = data.aws_route53_zone.reverse_zone.zone_id
+  name    = format("%s.%s.%s.%s.in-addr.arpa",
+    element(split(".", aws_instance.zookeeper[count.index].private_ip), 3),
+    element(split(".", aws_instance.zookeeper[count.index].private_ip), 2),
+    element(split(".", aws_instance.zookeeper[count.index].private_ip), 1),
+    element(split(".", aws_instance.zookeeper[count.index].private_ip), 0))
+  type    = "PTR"
+  ttl     = "300"
+  records = [format("%s.%s", aws_instance.zookeeper[count.index].tags.SubDomain, var.aws_zone)]
 }
 
 resource "aws_route53_record" "registry_record" {
@@ -46,7 +93,7 @@ resource "aws_route53_record" "registry_record" {
   type    = "A"
   ttl     = "300"
 
-  records = [aws_instance.registry[count.index].public_ip]
+  records = [aws_instance.registry[count.index].private_ip]
 }
 
 resource "aws_route53_record" "ksqldb_record" {
@@ -56,7 +103,7 @@ resource "aws_route53_record" "ksqldb_record" {
   type    = "A"
   ttl     = "300"
 
-  records = [aws_instance.ksqldb[count.index].public_ip]
+  records = [aws_instance.ksqldb[count.index].private_ip]
 }
 
 resource "aws_route53_record" "ccc_record" {
@@ -66,7 +113,7 @@ resource "aws_route53_record" "ccc_record" {
   type    = "A"
   ttl     = "300"
 
-  records = [aws_instance.ccc[count.index].public_ip]
+  records = [aws_instance.ccc[count.index].private_ip]
 }
 
 resource "aws_route53_record" "connect_record" {
@@ -76,7 +123,7 @@ resource "aws_route53_record" "connect_record" {
   type    = "A"
   ttl     = "300"
 
-  records = [aws_instance.connect[count.index].public_ip]
+  records = [aws_instance.connect[count.index].private_ip]
 }
 
 resource "aws_instance" "zookeeper" {
@@ -86,6 +133,8 @@ resource "aws_instance" "zookeeper" {
   key_name               = data.aws_key_pair.my_key_pair.key_name
   vpc_security_group_ids = [data.aws_security_group.security-group.id]
   availability_zone      = data.aws_availability_zones.available.names[count.index % length(data.aws_availability_zones.available.names)]
+  subnet_id              = data.aws_subnet.subnets[count.index % length(data.aws_availability_zones.available.names)].id
+
   root_block_device {
     volume_size = 20
   }
@@ -117,6 +166,7 @@ resource "aws_instance" "broker" {
   key_name               = data.aws_key_pair.my_key_pair.key_name
   vpc_security_group_ids = [data.aws_security_group.security-group.id]
   availability_zone      = data.aws_availability_zones.available.names[count.index % length(data.aws_availability_zones.available.names)]
+  subnet_id              = data.aws_subnet.subnets[count.index % length(data.aws_availability_zones.available.names)].id
 
   root_block_device {
     volume_size = 20
@@ -149,6 +199,7 @@ resource "aws_instance" "registry" {
   key_name               = data.aws_key_pair.my_key_pair.key_name
   vpc_security_group_ids = [data.aws_security_group.security-group.id]
   availability_zone      = data.aws_availability_zones.available.names[count.index % length(data.aws_availability_zones.available.names)]
+  subnet_id              = data.aws_subnet.subnets[count.index % length(data.aws_availability_zones.available.names)].id
 
   tags = {
     Name      = "${var.resource_name_prefix}-registry-${count.index}"
@@ -165,6 +216,7 @@ resource "aws_instance" "ksqldb" {
   key_name               = data.aws_key_pair.my_key_pair.key_name
   vpc_security_group_ids = [data.aws_security_group.security-group.id]
   availability_zone      = data.aws_availability_zones.available.names[count.index % length(data.aws_availability_zones.available.names)]
+  subnet_id              = data.aws_subnet.subnets[count.index % length(data.aws_availability_zones.available.names)].id
 
   tags = {
     Name      = "${var.resource_name_prefix}-ksqldb-${count.index}"
@@ -181,6 +233,7 @@ resource "aws_instance" "ccc" {
   key_name               = data.aws_key_pair.my_key_pair.key_name
   vpc_security_group_ids = [data.aws_security_group.security-group.id]
   availability_zone      = data.aws_availability_zones.available.names[count.index % length(data.aws_availability_zones.available.names)]
+  subnet_id              = data.aws_subnet.subnets[count.index % length(data.aws_availability_zones.available.names)].id
 
   root_block_device {
     volume_size = 20
@@ -213,6 +266,7 @@ resource "aws_instance" "connect" {
   key_name               = data.aws_key_pair.my_key_pair.key_name
   vpc_security_group_ids = [data.aws_security_group.security-group.id]
   availability_zone      = data.aws_availability_zones.available.names[count.index % length(data.aws_availability_zones.available.names)]
+  subnet_id              = data.aws_subnet.subnets[count.index % length(data.aws_availability_zones.available.names)].id
 
   root_block_device {
     volume_size = 20
@@ -233,7 +287,7 @@ output "aws_nameservers" {
 
 output "all_hosts_join" {
   value = join("\n", [
-    for instance in setunion(aws_instance.ccc, aws_instance.ksqldb, aws_instance.registry, aws_instance.broker, aws_instance.zookeeper) :
+    for instance in setunion(aws_instance.ccc, aws_instance.ksqldb, aws_instance.registry, aws_instance.broker, aws_instance.zookeeper, aws_instance.connect) :
     format("%s#%s#%s#%s", instance.tags.DnsName, instance.private_dns, instance.private_ip, instance.tags.DN)
   ])
 }
